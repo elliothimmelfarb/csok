@@ -1,32 +1,44 @@
-assert = require('chai').assert;
+const assert = require('chai').assert;
+const csok = require('./csok');
 
-function sayHi(name) {
-  if (!name || typeof name !== 'string') {
-    return 'Hi!';
-  } else {
-    return `Hi, ${name}!`;
-  }
+const inlineStyles = {
+  one: {
+    color: 'red',
+    float: 'left',
+  },
+  two: {
+    color: 'blue',
+    textDecoration: 'underline',
+  },
 }
 
-// Mocha testing
+const classNames = {
+  one: 'one_class',
+  two: 'two_class',
+}
 
-// First we label the part of code we are testing
-describe('sayHi()', () => {
+const res = csok(inlineStyles.one, inlineStyles.two);
 
-  // Then we describe the functionality we are testing
-  it('should return a string', () => {
-    // Then we make the assertions
-    assert.typeOf(sayHi(), 'string');
+console.log(Object.keys(res).length);
+
+describe('Cascading Style Object Keys', () => {
+  describe('When provided inline style object keys as params', () => {
+    it('should return an object', () => {
+      assert.typeOf(csok(inlineStyles.one, inlineStyles.two), 'object');
+    });
+    it('should cascade the styles', () => {
+      assert.equal(csok(inlineStyles.one, inlineStyles.two).color, 'blue');
+    });
+    it('should combine the keys', () => {
+      assert.equal(Object.keys(csok(inlineStyles.one, inlineStyles.two)).length, 3);
+    });
   });
-
-  // We can test more functionality
-  it('should insert name into return string', () => {
-    assert.equal(sayHi('Ned'), 'Hi, Ned!');
-  });
-
-  it('should return simple response with no or invalid parameter', () => {
-    assert.equal(sayHi(), 'Hi!');
-    // We can use multiple asserts to test expected output
-    assert.notEqual(sayHi(4), 'Hi, 4!');
+  describe('When provided class name strings as params', () => {
+    it('should retun a string', () => {
+      assert.typeOf(csok(classNames.one, classNames.two), 'string');
+    });
+    it('should concatenate the classnames with spaces', () => {
+      assert.equal(csok(classNames.one, classNames.two), 'one_class two_class');
+    });
   });
 });
